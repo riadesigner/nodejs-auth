@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <% if (!user) { %>
+        <p>Главная</p> 
+        <p>Пожалуйста, <a href="/auth/yandex"> авторизуйтесь </a></p>
+    <% } else { %>
+        <p>Привет, <%= user.username %>. </p>
+        <p>Перейти в <a href="/account">профиль</a>.</p>
+    <% } %>
+    
+</body>
+</html>
