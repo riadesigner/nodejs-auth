@@ -38,9 +38,9 @@ passport.use(
 const app = express();
 app.use(require('cookie-parser')())
 app.use(require('express-session')({    
-    secret: process.env.SESSION_SECRET,    
-    // resave: false,
-    // saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,   
     // cookie: { secure: true }
 }))
 
@@ -49,7 +49,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res)=>{
-    res.render('index',{user: req.user});
+    const user = req.user;
+    const email = user && user.emails && user.emails.length ? user.emails[0].value : null;          
+    const avatar = (user && user.photos && user.photos.length>0) ? user.photos[0].value : null;
+    res.render('index',{user, avatar, email});
 });
 
 app.get('/account', 
@@ -65,10 +68,19 @@ app.get('/auth/yandex',
 app.get('/auth/yandex/callback', 
     passport.authenticate('yandex', {failureRedirect: '/'}),
     (req, res)=>{
-        console.log('req.user=',req.user)
         res.redirect('/')
     }
 );
+
+app.get("/exit", (req, res, next) => {  
+    req.logout(req.user, err => {
+      if(err) return next(err);    
+        req.session.destroy(function (err) {            
+          res.redirect('/');
+        });
+    });
+});  
+  
 
 const PORT = process.env.PORT;
 app.listen(PORT, ()=>{
